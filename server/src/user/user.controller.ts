@@ -44,26 +44,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  @HttpCode(200)
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the user with the specified ID',
-    type: CreateUserDto,
-  })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(200)
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiResponse({
-    status: 204,
+    status: 200,
     description: 'The user has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'User not found' })

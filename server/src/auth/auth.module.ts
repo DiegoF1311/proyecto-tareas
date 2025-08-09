@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { TasksController } from './tasks.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Task } from './entities/task.entity';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Task]),
+    UserModule,
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],
@@ -18,7 +17,8 @@ import { ConfigService } from '@nestjs/config';
       }),
     }),
   ],
-  controllers: [TasksController],
-  providers: [TasksService],
+  providers: [AuthService],
+  controllers: [AuthController],
+  exports: [AuthService],
 })
-export class TasksModule {}
+export class AuthModule {}
