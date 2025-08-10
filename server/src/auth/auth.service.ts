@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import bcrypt from 'bcrypt';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,25 +12,28 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async logIn(logInDto: LoginDto): Promise<{ access_token: string }> {
-    const user = await this.userService.findOneByUsername(logInDto.username);
+  async logIn(
+    logInDto: LoginDto,
+  ): Promise<{ user: User; access_token: string }> {
+    const userAux = await this.userService.findOneByUsername(logInDto.username);
 
-    if (!user) {
+    if (!userAux) {
       throw new HttpException('User not found', 404);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const isPasswordValid: boolean = await bcrypt.compare(
       logInDto.password,
-      user.password,
+      userAux.password,
     );
 
     if (!isPasswordValid) {
       throw new HttpException('Invalid credentials', 401);
     }
 
-    const payload = { sub: user.id, username: user.username };
+    const payload = { sub: userAux.id, username: userAux.username };
     return {
+      user: userAux,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
